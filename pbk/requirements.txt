@@ -1,0 +1,9 @@
+PyMuPDF==1.18.14
+pandas
+gima-common[all]==0.0.6
+cx_Oracle==7.3.0
+scikit-learn==0.20.3
+nltk
+kpss_py3
+numpy==1.19.5
+
