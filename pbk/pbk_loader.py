@@ -1,23 +1,22 @@
+import os
 import argparse
 from gima_common.setup_logging import set_log
-from verrijking_aktes import verrijk_aktes
-from nieuwbouw import bepaal_nieuwbouw
-from sync_postgres import store_data
 import logging
+from pbk_base import load_pbk_basisbestand, load_pbk_cbs, validate_data
 
 set_log()
 
 
-def start_proces(execute_function, p_jaarmaand = None):
-    if execute_function == "verrijk-aktes":
-        logging.info("verrijk aktes door middel van textherkenning")
-        verrijk_aktes()
-    elif execute_function == "bepaal-nieuwbouw":
-        logging.info("bepalen nieuwbouw")
-        bepaal_nieuwbouw(p_jaarmaand)
-    elif execute_function == "push-to-postgres":
-        logging.info("push data to postgres")
-        store_data(p_jaarmaand)
+def start_proces(execute_function):
+    if execute_function == "laden_pbk_cbs":
+        logging.info("laden pbk_cbs")
+        load_pbk_cbs()
+    elif execute_function == "valideren_pbk_cbs":
+        logging.info("valideren pbk_cbs")
+        validate_data()
+    elif execute_function == "laden_pbk_basisbestand":
+        logging.info("laden pbk_basisbestand")
+        load_pbk_basisbestand()
     else:
         logging.error(f"NIET BEKEND COMMANDO: '{execute_function}'")
         raise Exception
@@ -26,6 +25,7 @@ def start_proces(execute_function, p_jaarmaand = None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--executeFunction", help="function to run(DST) or determine ")
-    parser.add_argument("--timeperiod", help="required year and month, default is None")
     args = parser.parse_args()
-    start_proces(execute_function=args.executeFunction, p_jaarmaand=args.timeperiod)
+    start_proces(execute_function=args.executeFunction)
+
+
