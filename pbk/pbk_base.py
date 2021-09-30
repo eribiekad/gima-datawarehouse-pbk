@@ -19,15 +19,19 @@ pg_client = PostgresClient( host=secrets['postgres-pbk-host']
                             , port=secrets['postgres-pbk-port']
                         )
 
-def load_pbk_cbs():
+def load_pbk_cbs(pbkcbs_file):
     """
     Function loads PBK_CBS excel-data into table PBK_INPUT
+    Input: name datafile
+    Output: None
     """
+    
+    logging.info(f"""begin met laden pbk_cbs, bestand: {pbkcbs_file}""")
 
-    logging.info("begin met laden pbk_cbs")
+    # 'PBK_Kadaster2021.xls'
 
     minio_client = MinioClient()
-    file_data = minio_client.download_file('pbk', 'PBK_Kadaster2021.xls')
+    file_data = minio_client.download_file('pbk', pbkcbs_file)
     df = pd.read_excel(file_data)
 
     # renamen met zinnige kolomnamen
@@ -70,16 +74,18 @@ def load_pbk_basisbestand():
     logging.info("klaar met laden pbk_basisbestand")
 
 
-def load_pbk_initial():
+def load_pbk_initial(datadump_file):
     """
     Function will create and initial fill table INDICES
     Condition is a data-dump in Excel from table 'indices' to be found in the L:\BasisBestanden\PBK  Prijsindex bestaande koopwoningen\PKB.mdb
+    Input: name datafile
+    Output: None
     """
 
-    logging.info("begin met laden pbk_initieel")
+    logging.info(f"""begin met laden pbk_initieel, bestand: {datadump_file}""")
 
     minio_client = MinioClient()
-    file_data = minio_client.download_file('pbk', 'dump_pbk202108.xlsx')
+    file_data = minio_client.download_file('pbk', {datadump_file})
     df = pd.read_excel(file_data)
     # formatteren kolomnamen, lowercase, geen spaties
     df=df.rename(columns=str.lower)
@@ -133,9 +139,9 @@ if __name__ == "__main__":
     # parser.add_argument("--executeFunction", help="function to run(DST) or determine ")
     # args = parser.parse_args()
     # start_proces(execute_function=args.executeFunction)
-    # laden_pbk_initieel()
-    load_pbk_cbs()
-    validate_data()
-    load_pbk_basisbestand()
+    # laden_pbk_initieel('dump_pbk202108.xlsx')
+    load_pbk_cbs('PBK_Kadaster2021.xls')
+    # validate_data()
+    # load_pbk_basisbestand()
 
 
